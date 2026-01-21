@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DailyCheckIns from "./components/DailyCheckIns.vue";
+import DailyCheckIns from "./components/check-ins/DailyCheckIns.vue";
 </script>
 
 <template>
