@@ -74,10 +74,39 @@ onMounted(() => {
                 <p class="has-text-centered">No daily check-ins yet. Be the first to add one!</p>
             </div>
 
-            <!-- Daily Notes List -->
-            <div v-else class="columns is-multiline">
-                <div v-for="note in formattedDailyNotes" :key="note._id" class="column is-12">
-                    <CheckInCard :note="note" />
+            <!-- Daily Notes 3-Column Layout -->
+            <div v-else class="three-column-layout">
+                <!-- Column 1: Previous Work Day Progress -->
+                <div class="column-wrapper">
+                    <div class="column-header">
+                        <h3 class="column-title">Previous work day progress</h3>
+                    </div>
+                    <div class="column-content">
+                        <CheckInCard v-for="note in formattedDailyNotes" :key="`prev-${note._id}`" :note="note"
+                            type="previous" />
+                    </div>
+                </div>
+
+                <!-- Column 2: Plans for Today -->
+                <div class="column-wrapper">
+                    <div class="column-header">
+                        <h3 class="column-title">Plans for today</h3>
+                    </div>
+                    <div class="column-content">
+                        <CheckInCard v-for="note in formattedDailyNotes" :key="`today-${note._id}`" :note="note"
+                            type="today" />
+                    </div>
+                </div>
+
+                <!-- Column 3: Any Blockers -->
+                <div class="column-wrapper">
+                    <div class="column-header">
+                        <h3 class="column-title">Any blockers? 🔥</h3>
+                    </div>
+                    <div class="column-content">
+                        <CheckInCard v-for="note in formattedDailyNotes" :key="`blocker-${note._id}`" :note="note"
+                            type="blocker" />
+                    </div>
                 </div>
             </div>
 
@@ -107,5 +136,46 @@ onMounted(() => {
 
 .content p {
     line-height: 1.6;
+}
+
+.three-column-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.column-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
+}
+
+.column-header {
+    background: white;
+    padding: 16px;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 2px solid #f5f5f5;
+}
+
+.column-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #363636;
+    margin: 0;
+}
+
+.column-content {
+    flex: 1;
+    padding: 16px;
+    background: #fafafa;
+    border-radius: 0 0 8px 8px;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .three-column-layout {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
