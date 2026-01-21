@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 
 interface DailyNote {
     _id: string;
@@ -34,16 +34,19 @@ const fetchDailyNotes = async () => {
     }
 };
 
-const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-};
+
+const formattedDailyNotes = computed(() => {
+    return dailyNotes.value.map(note => ({
+        ...note,
+        formattedDate: new Date(note.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+    }));
+});
 
 onMounted(() => {
     fetchDailyNotes();
@@ -73,7 +76,7 @@ onMounted(() => {
 
             <!-- Daily Notes List -->
             <div v-else class="columns is-multiline">
-                <div v-for="note in dailyNotes" :key="note._id" class="column is-12">
+                <div v-for="note in formattedDailyNotes" :key="note._id" class="column is-12">
                     <div class="card">
                         <div class="card-content">
                             <div class="media">
@@ -86,7 +89,7 @@ onMounted(() => {
                                 </div>
                                 <div class="media-content">
                                     <p class="title is-4">{{ note.developerName }}</p>
-                                    <p class="subtitle is-6 has-text-grey">{{ formatDate(note.createdAt) }}</p>
+                                    <p class="subtitle is-6 has-text-grey">{{ note.formattedDate }}</p>
                                 </div>
                                 <div class="media-right">
                                     <span class="tag is-medium" :class="note.hasBlocker ? 'is-danger' : 'is-success'">
