@@ -1,8 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import DailyCheckIns from "./components/DailyCheckIns.vue";
+</script>
 
 <template>
-  <h1>Manage Devs</h1>
-  
+  <DailyCheckIns />
 </template>
 
 <style scoped></style>

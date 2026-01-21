@@ -1,48 +1,127 @@
-# manage_devs
+# Daily Check-ins Vue Application
 
-This template should help get you started developing with Vue 3 in Vite.
+A Vue 3 + TypeScript application to display developer daily check-ins using Bulma CSS framework.
 
-## Recommended IDE Setup
+## Features
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- 📋 Display all daily check-ins in a beautiful card layout
+- 🎨 Styled with Bulma CSS framework
+- 🔄 Real-time data fetching from backend API
+- ⚡ Loading and error states
+- 📱 Responsive design
+- ✨ Hover animations on cards
+- 🔄 Refresh functionality
 
-## Recommended Browser Setup
+## Tech Stack
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+- **Vue 3** - Progressive JavaScript framework
+- **TypeScript** - Type-safe development
+- **Bulma CSS** - Modern CSS framework
+- **Vite** - Fast build tool
+- **Font Awesome** - Icon library
 
-## Type Support for `.vue` Imports in TS
+## Project Structure
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+```
+manage_devs/
+├── src/
+│   ├── components/
+│   │   └── DailyCheckIns.vue    # Main component for displaying check-ins
+│   ├── App.vue                   # Root component
+│   └── main.ts                   # Application entry point
+├── index.html                    # HTML template with Bulma & Font Awesome
+└── package.json                  # Dependencies
+```
 
-## Customize configuration
+## Installation
 
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
+cd manage_devs
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+## Running the Application
 
-```sh
+Development mode:
+
+```bash
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+The app will be available at `http://localhost:5173/` (or next available port)
 
-```sh
+## Component Details
+
+### DailyCheckIns.vue
+
+This component:
+
+- Fetches daily notes from the backend API (`http://localhost:4000/api/daily-notes`)
+- Displays each note in a Bulma card with:
+  - Developer name and avatar icon
+  - Timestamp of submission
+  - Blocker status badge (red for blocker, green for no blocker)
+  - Previous day's work
+  - Today's plan
+- Includes loading state while fetching data
+- Shows error message if API fails
+- Provides refresh button to reload data
+- Responsive card hover effects
+
+### API Integration
+
+The component expects the backend API to return data in this format:
+
+```json
+{
+  "success": true,
+  "count": 2,
+  "data": [
+    {
+      "_id": "...",
+      "developerName": "John Doe",
+      "previousDayWork": "Implemented authentication",
+      "todayPlan": "Work on dashboard",
+      "hasBlocker": false,
+      "createdAt": "2026-01-20T10:00:00.000Z",
+      "updatedAt": "2026-01-20T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+## Design Features
+
+- **Header**: "Daily Check-ins" centered title
+- **Cards**: Each check-in displayed in a card with:
+  - User icon (Font Awesome)
+  - Developer name
+  - Formatted timestamp
+  - Status badge (blocker/no blocker)
+  - Previous day work section with 📅 emoji
+  - Today's plan section with 🎯 emoji
+- **Hover Effect**: Cards lift up slightly on hover
+- **Background**: Light gray background (#f5f5f5)
+- **Spacing**: Proper padding and margins for readability
+
+## Prerequisites
+
+Make sure the backend server is running on `http://localhost:4000` before starting the Vue app.
+
+## Build for Production
+
+```bash
 npm run build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## Type Checking
 
-```sh
+```bash
+npm run type-check
+```
+
+## Linting
+
+```bash
 npm run lint
 ```
