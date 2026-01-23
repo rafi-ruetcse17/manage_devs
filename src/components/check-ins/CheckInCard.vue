@@ -5,6 +5,8 @@ interface Note {
     previousDayWork: string;
     todayPlan: string;
     hasBlocker: boolean;
+    createdAt: string;
+    updatedAt: string;
     formattedDate: string;
 }
 
@@ -12,10 +14,18 @@ defineProps<{
     note: Note;
     type: "previous" | "today" | "blocker";
 }>();
+
+const emit = defineEmits<{
+    (e: 'click', note: Note): void
+}>();
+
+const handleClick = (note: Note) => {
+    emit('click', note);
+};
 </script>
 
 <template>
-    <div class="check-in-card">
+    <div class="check-in-card" @click="handleClick(note)">
         <div class="card-header">
             <div class="user-info">
                 <span class="user-avatar">
@@ -50,6 +60,7 @@ defineProps<{
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     border: 1px solid rgba(102, 126, 234, 0.1);
+    cursor: pointer;
 }
 
 .check-in-card:hover {

@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import CheckInCard from "./CheckInCard.vue";
+import CheckinModal from "../modals/CheckinModal.vue";
 
 interface DailyNote {
     _id: string;
@@ -11,11 +12,14 @@ interface DailyNote {
     hasBlocker: boolean;
     createdAt: string;
     updatedAt: string;
+    formattedDate?: string;
 }
 
 const dailyNotes = ref<DailyNote[]>([]);
 const loading = ref(true);
 const error = ref("");
+const showModal = ref(false);
+const selectedNote = ref<DailyNote | null>(null);
 
 const fetchDailyNotes = async () => {
     try {
@@ -47,6 +51,16 @@ const formattedDailyNotes = computed(() => {
         }),
     }));
 });
+
+const handleCardClick = (note: DailyNote) => {
+    selectedNote.value = note;
+    showModal.value = true;
+};
+
+const closeModal = () => {
+    showModal.value = false;
+    selectedNote.value = null;
+};
 
 onMounted(() => {
     fetchDailyNotes();
@@ -83,7 +97,7 @@ onMounted(() => {
                     </div>
                     <div class="column-content">
                         <CheckInCard v-for="note in formattedDailyNotes" :key="`prev-${note._id}`" :note="note"
-                            type="previous" />
+                            type="previous" @click="handleCardClick" />
                     </div>
                 </div>
 
@@ -94,7 +108,7 @@ onMounted(() => {
                     </div>
                     <div class="column-content">
                         <CheckInCard v-for="note in formattedDailyNotes" :key="`today-${note._id}`" :note="note"
-                            type="today" />
+                            type="today" @click="handleCardClick" />
                     </div>
                 </div>
 
@@ -105,7 +119,7 @@ onMounted(() => {
                     </div>
                     <div class="column-content">
                         <CheckInCard v-for="note in formattedDailyNotes" :key="`blocker-${note._id}`" :note="note"
-                            type="blocker" />
+                            type="blocker" @click="handleCardClick" />
                     </div>
                 </div>
             </div>
@@ -119,6 +133,9 @@ onMounted(() => {
                 </button>
             </div>
         </div>
+
+        <!-- Modal -->
+        <CheckinModal :show="showModal" :note="selectedNote" @close="closeModal" />
     </section>
 </template>
 
@@ -164,7 +181,7 @@ onMounted(() => {
     grid-template-columns: repeat(3, 1fr);
     gap: 28px;
     margin-top: 2rem;
-    
+
 }
 
 .column-wrapper {
