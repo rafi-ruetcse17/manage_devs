@@ -56,8 +56,8 @@ onMounted(() => {
 <template>
     <section class="section">
         <div class="container">
-            <h1 class="title is-2 has-text-centered">Team Standups</h1>
-            <p class="has-text-centered mb-6">Daily check-ins</p>
+            <h1 class="main-title">Team Standups</h1>
+            <p class="subtitle-text">Stay connected with daily check-ins from your team</p>
             <!-- Loading State -->
             <div v-if="loading" class="has-text-centered">
                 <button class="button is-loading is-large is-ghost">Loading</button>
@@ -101,7 +101,7 @@ onMounted(() => {
                 <!-- Column 3: Any Blockers -->
                 <div class="column-wrapper">
                     <div class="column-header">
-                        <h3 class="column-title">Any blockers? 🔥</h3>
+                        <h3 class="column-title">Any blockers?</h3>
                     </div>
                     <div class="column-content">
                         <CheckInCard v-for="note in formattedDailyNotes" :key="`blocker-${note._id}`" :note="note"
@@ -110,7 +110,6 @@ onMounted(() => {
                 </div>
             </div>
 
-            <!-- Refresh Button -->
             <div class="has-text-centered mt-5" v-if="!loading && !error">
                 <button class="button is-primary is-outlined" @click="fetchDailyNotes">
                     <span class="icon">
@@ -124,14 +123,36 @@ onMounted(() => {
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 .section {
     min-height: 100vh;
-    background-color: #f5f5f5;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 3rem 1.5rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.title.is-2 {
-    color: #363636;
-    font-weight: 700;
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.main-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    letter-spacing: -0.02em;
+}
+
+.subtitle-text {
+    text-align: center;
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 3rem;
+    font-weight: 400;
 }
 
 .content p {
@@ -141,41 +162,83 @@ onMounted(() => {
 .three-column-layout {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    margin-top: 24px;
+    gap: 28px;
+    margin-top: 2rem;
+    
 }
 
 .column-wrapper {
     display: flex;
     flex-direction: column;
     min-height: 400px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.column-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
 .column-header {
-    background: white;
-    padding: 16px;
-    border-radius: 8px 8px 0 0;
-    border-bottom: 2px solid #f5f5f5;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    border-bottom: none;
 }
 
 .column-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #363636;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    color: #ffffff;
     margin: 0;
+    letter-spacing: -0.01em;
 }
 
 .column-content {
     flex: 1;
-    padding: 16px;
-    background: #fafafa;
-    border-radius: 0 0 8px 8px;
+    padding: 20px;
+    background: #ffffff;
 }
 
-/* Responsive design */
+.notification {
+    font-size: 1.1rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.button.is-primary {
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.button.is-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
 @media (max-width: 1024px) {
+    .main-title {
+        font-size: 2.5rem;
+    }
+
+    .subtitle-text {
+        font-size: 1.1rem;
+    }
+
     .three-column-layout {
         grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .column-title {
+        font-size: 1.3rem;
     }
 }
 </style>

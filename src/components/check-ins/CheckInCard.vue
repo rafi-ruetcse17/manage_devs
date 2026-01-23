@@ -44,37 +44,41 @@ defineProps<{
 <style scoped>
 .check-in-card {
     background: white;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s ease;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(102, 126, 234, 0.1);
 }
 
 .check-in-card:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+    border-color: rgba(102, 126, 234, 0.3);
 }
 
 .card-header {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .user-info {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: #3273dc;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 24px;
+    font-size: 26px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .user-details {
@@ -82,34 +86,37 @@ defineProps<{
 }
 
 .user-name {
-    font-weight: 600;
-    font-size: 14px;
-    color: #363636;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #2d3748;
     margin: 0;
+    letter-spacing: -0.01em;
 }
 
 .user-role {
-    font-size: 12px;
-    color: #7a7a7a;
+    font-size: 0.9rem;
+    color: #718096;
     margin: 0;
+    margin-top: 2px;
+    font-weight: 500;
 }
 
 .card-body {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .content-text {
-    font-size: 14px;
-    color: #4a4a4a;
-    line-height: 1.5;
+    font-size: 1rem;
+    color: #4a5568;
+    line-height: 1.7;
     margin: 0;
+    font-weight: 400;
 }
 
 .blocker-status {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px 0;
 }
 
 .blocker-icon,
@@ -118,13 +125,14 @@ defineProps<{
 }
 
 .card-footer {
-    border-top: 1px solid #f5f5f5;
-    padding-top: 8px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 12px;
 }
 
 .timestamp {
-    font-size: 12px;
-    color: #b5b5b5;
+    font-size: 0.85rem;
+    color: #a0aec0;
     margin: 0;
+    font-weight: 500;
 }
 </style>
