@@ -1,25 +1,11 @@
 <script setup lang="ts">
-interface Note {
-    _id: string;
-    developerName: string;
-    previousDayWork: string;
-    todayPlan: string;
-    hasBlocker: boolean;
-    createdAt: string;
-    updatedAt: string;
-    formattedDate: string;
-}
+import { type DailyNote } from "../../types/note";
 
-defineProps<{
-    note: Note;
-    type: "previous" | "today" | "blocker";
-}>();
+defineProps<{ note: DailyNote; type: "previous" | "today" | "blocker"; }>();
 
-const emit = defineEmits<{
-    (e: 'click', note: Note): void
-}>();
+const emit = defineEmits<{ (e: 'click', note: DailyNote): void }>();
 
-const handleClick = (note: Note) => {
+const handleClick = (note: DailyNote) => {
     emit('click', note);
 };
 </script>

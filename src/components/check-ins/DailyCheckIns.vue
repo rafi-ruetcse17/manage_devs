@@ -3,25 +3,19 @@ import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import CheckInCard from "./CheckInCard.vue";
 import CheckinModal from "../modals/CheckinModal.vue";
+import AddCheckinModal from "../modals/AddCheckinModal.vue";
 import { useAuthStore } from "../../stores/authStore";
 
-interface DailyNote {
-    _id: string;
-    developerName: string;
-    previousDayWork: string;
-    todayPlan: string;
-    hasBlocker: boolean;
-    createdAt: string;
-    updatedAt: string;
-    formattedDate?: string;
-}
+import { type DailyNote } from "../../types/note";
 
 const dailyNotes = ref<DailyNote[]>([]);
 const loading = ref(true);
 const error = ref("");
 const showModal = ref(false);
+const showAddModal = ref(false);
 const selectedNote = ref<DailyNote | null>(null);
-const selectedDate = ref<string>("");
+const today = new Date().toLocaleDateString("en-CA");
+const selectedDate = ref<string>(today);
 const { user, logout } = useAuthStore();
 
 const fetchDailyNotes = async (date?: string) => {
@@ -62,6 +56,15 @@ const formattedDailyNotes = computed(() => {
     }));
 });
 
+const hasSubmittedToday = computed(() => {
+    if (!user.value) return false;
+    const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+    return dailyNotes.value.some(note => {
+        const noteDate = new Date(note.createdAt).toLocaleDateString("en-CA");
+        return noteDate === today && note.username === user.value?.username;
+    });
+});
+
 const handleCardClick = (note: DailyNote) => {
     selectedNote.value = note;
     showModal.value = true;
@@ -93,7 +96,7 @@ const formattedSelectedDate = computed(() => {
 });
 
 onMounted(() => {
-    fetchDailyNotes();
+    fetchDailyNotes(selectedDate.value);
 });
 
 </script>
@@ -103,6 +106,17 @@ onMounted(() => {
         <!-- Auth Header -->
         <div class="auth-header">
             <div class="user-profile">
+                <!-- Fill Report Button -->
+                <button v-if="!hasSubmittedToday" @click="showAddModal = true"
+                    class="button is-primary is-rounded mr-4 fill-report-btn">
+                    <span class="icon"><i class="fas fa-plus-circle"></i></span>
+                    <span>Fill out Report</span>
+                </button>
+                <div v-else class="has-text-success is-size-7 mr-4 has-text-weight-bold">
+                    <span class="icon"><i class="fas fa-check-circle"></i></span>
+                    Report Submitted
+                </div>
+
                 <div class="user-avatar-small">
                     <i class="fas fa-user-circle"></i>
                 </div>
@@ -125,7 +139,7 @@ onMounted(() => {
                             <i class="fas fa-calendar-alt"></i>
                             <span>Filter by Date:</span>
                         </label>
-                        <input type="date" @change="handleDateSelect" class="date-input"
+                        <input type="date" @change="handleDateSelect" class="date-input" :value="selectedDate"
                             :max="new Date().toISOString().split('T')[0]" />
                     </div>
                     <div class="selected-date-display">
@@ -204,8 +218,9 @@ onMounted(() => {
             </div>
         </div>
 
-        <!-- Modal -->
+        <!-- Modals -->
         <CheckinModal :show="showModal" :note="selectedNote" @close="closeModal" />
+        <AddCheckinModal :show="showAddModal" @close="showAddModal = false" @success="fetchDailyNotes" />
     </section>
 </template>
 
@@ -237,9 +252,21 @@ onMounted(() => {
     align-items: center;
     gap: 12px;
     background: rgba(255, 255, 255, 0.9);
-    padding: 8px 16px;
+    padding: 8px 20px;
     border-radius: 50px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.fill-report-btn {
+    font-weight: 700;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.fill-report-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
 .user-avatar-small {

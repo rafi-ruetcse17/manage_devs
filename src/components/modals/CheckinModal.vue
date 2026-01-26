@@ -1,14 +1,5 @@
 <script setup lang="ts">
-interface DailyNote {
-    _id: string;
-    developerName: string;
-    previousDayWork: string;
-    todayPlan: string;
-    hasBlocker: boolean;
-    createdAt: string;
-    updatedAt: string;
-    formattedDate?: string;
-}
+import { type DailyNote } from "../../types/note";
 
 interface Props {
     show: boolean;
