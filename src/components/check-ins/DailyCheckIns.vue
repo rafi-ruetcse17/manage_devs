@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import CheckInCard from "./CheckInCard.vue";
 import CheckinModal from "../modals/CheckinModal.vue";
+import { useAuthStore } from "../../stores/authStore";
 
 interface DailyNote {
     _id: string;
@@ -21,6 +22,7 @@ const error = ref("");
 const showModal = ref(false);
 const selectedNote = ref<DailyNote | null>(null);
 const selectedDate = ref<string>("");
+const { user, logout } = useAuthStore();
 
 const fetchDailyNotes = async (date?: string) => {
     try {
@@ -98,9 +100,45 @@ onMounted(() => {
 
 <template>
     <section class="section">
+        <!-- Auth Header -->
+        <div class="auth-header">
+            <div class="user-profile">
+                <div class="user-avatar-small">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info-text">
+                    <p class="user-name-text">{{ user?.name }}</p>
+                    <button @click="logout" class="logout-link">Logout</button>
+                </div>
+            </div>
+        </div>
+
         <div class="container">
             <h1 class="main-title">Team Standups</h1>
             <p class="subtitle-text">Stay connected with daily check-ins from your team</p>
+
+            <!-- Date Filter Section -->
+            <div v-if="!loading && !error" class="date-filter-section">
+                <div class="date-filter-container">
+                    <div class="date-picker-wrapper">
+                        <label class="date-label">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Filter by Date:</span>
+                        </label>
+                        <input type="date" @change="handleDateSelect" class="date-input"
+                            :max="new Date().toISOString().split('T')[0]" />
+                    </div>
+                    <div class="selected-date-display">
+                        <span class="date-badge">{{ formattedSelectedDate }}</span>
+                        <button v-if="selectedDate" @click="clearDateFilter" class="clear-button"
+                            title="Clear date filter">
+                            <i class="fas fa-times"></i>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Loading State -->
             <div v-if="loading" class="has-text-centered">
                 <button class="button is-loading is-large is-ghost">Loading</button>
@@ -118,28 +156,6 @@ onMounted(() => {
                     <template v-if="selectedDate">No check-ins found for {{ formattedSelectedDate }}</template>
                     <template v-else>No daily check-ins yet. Be the first to add one!</template>
                 </p>
-            </div>
-
-            <!-- Date Filter Section -->
-            <div v-if="!loading && !error" class="date-filter-section">
-                <div class="date-filter-container">
-                    <div class="date-picker-wrapper">
-                        <label class="date-label">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Filter by Date:</span>
-                        </label>
-                        <input type="date" v-model="selectedDate" @change="handleDateSelect" class="date-input"
-                            :max="new Date().toISOString().split('T')[0]" />
-                    </div>
-                    <div class="selected-date-display">
-                        <span class="date-badge">{{ formattedSelectedDate }}</span>
-                        <button v-if="selectedDate" @click="clearDateFilter" class="clear-button"
-                            title="Clear date filter">
-                            <i class="fas fa-times"></i>
-                            Clear
-                        </button>
-                    </div>
-                </div>
             </div>
 
             <!-- Daily Notes 3-Column Layout -->
@@ -206,6 +222,61 @@ onMounted(() => {
 .container {
     max-width: 1400px;
     margin: 0 auto;
+    position: relative;
+}
+
+.auth-header {
+    position: absolute;
+    top: 2rem;
+    right: 3rem;
+    z-index: 10;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 16px;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.user-avatar-small {
+    font-size: 24px;
+    color: #667eea;
+    display: flex;
+    align-items: center;
+}
+
+.user-info-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.user-name-text {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #2d3748;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.logout-link {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #718096;
+    font-size: 0.75rem;
+    text-decoration: underline;
+    cursor: pointer;
+    text-align: left;
+    transition: color 0.3s ease;
+}
+
+.logout-link:hover {
+    color: #e53e3e;
 }
 
 .main-title {
