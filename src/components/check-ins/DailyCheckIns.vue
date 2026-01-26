@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import axios from "axios";
 import CheckInCard from "./CheckInCard.vue";
 import CheckinModal from "../modals/CheckinModal.vue";
@@ -20,14 +20,22 @@ const loading = ref(true);
 const error = ref("");
 const showModal = ref(false);
 const selectedNote = ref<DailyNote | null>(null);
+const selectedDate = ref<string>("");
 
-const fetchDailyNotes = async () => {
+const fetchDailyNotes = async (date?: string) => {
     try {
         loading.value = true;
-        const response = await axios.get("http://localhost:4000/api/daily-notes");
+        let url = "http://localhost:4000/api/daily-notes";
+
+        if (date) {
+            url += `?date=${date}`;
+        }
+
+        const response = await axios.get(url);
 
         if (response.data.success) {
             dailyNotes.value = response.data.data;
+
         } else {
             error.value = "Failed to fetch daily notes";
         }
@@ -62,9 +70,30 @@ const closeModal = () => {
     selectedNote.value = null;
 };
 
+const handleDateSelect = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    selectedDate.value = target.value;
+    fetchDailyNotes(target.value);
+};
+
+const clearDateFilter = () => {
+    selectedDate.value = "";
+    fetchDailyNotes();
+};
+
+const formattedSelectedDate = computed(() => {
+    if (!selectedDate.value) return "All Check-ins";
+    return new Date(selectedDate.value).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
+});
+
 onMounted(() => {
     fetchDailyNotes();
 });
+
 </script>
 
 <template>
@@ -80,16 +109,41 @@ onMounted(() => {
             <!-- Error State -->
             <div v-else-if="error" class="notification is-danger">
                 <p>{{ error }}</p>
-                <button class="button is-light mt-3" @click="fetchDailyNotes">Retry</button>
+                <button class="button is-light mt-3" @click="() => fetchDailyNotes()">Retry</button>
             </div>
 
             <!-- Empty State -->
             <div v-else-if="dailyNotes.length === 0" class="notification is-info is-light">
-                <p class="has-text-centered">No daily check-ins yet. Be the first to add one!</p>
+                <p class="has-text-centered">
+                    <template v-if="selectedDate">No check-ins found for {{ formattedSelectedDate }}</template>
+                    <template v-else>No daily check-ins yet. Be the first to add one!</template>
+                </p>
+            </div>
+
+            <!-- Date Filter Section -->
+            <div v-if="!loading && !error" class="date-filter-section">
+                <div class="date-filter-container">
+                    <div class="date-picker-wrapper">
+                        <label class="date-label">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Filter by Date:</span>
+                        </label>
+                        <input type="date" v-model="selectedDate" @change="handleDateSelect" class="date-input"
+                            :max="new Date().toISOString().split('T')[0]" />
+                    </div>
+                    <div class="selected-date-display">
+                        <span class="date-badge">{{ formattedSelectedDate }}</span>
+                        <button v-if="selectedDate" @click="clearDateFilter" class="clear-button"
+                            title="Clear date filter">
+                            <i class="fas fa-times"></i>
+                            Clear
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Daily Notes 3-Column Layout -->
-            <div v-else class="three-column-layout">
+            <div v-if="!loading && !error && dailyNotes.length > 0" class="three-column-layout">
                 <!-- Column 1: Previous Work Day Progress -->
                 <div class="column-wrapper">
                     <div class="column-header">
@@ -125,7 +179,7 @@ onMounted(() => {
             </div>
 
             <div class="has-text-centered mt-5" v-if="!loading && !error">
-                <button class="button is-primary is-outlined" @click="fetchDailyNotes">
+                <button class="button is-primary is-outlined" @click="() => fetchDailyNotes()">
                     <span class="icon">
                         <i class="fas fa-sync-alt"></i>
                     </span>
@@ -256,6 +310,139 @@ onMounted(() => {
 
     .column-title {
         font-size: 1.3rem;
+    }
+}
+
+/* Date Filter Styles */
+.date-filter-section {
+    margin-bottom: 2rem;
+}
+
+.date-filter-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.date-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.date-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+}
+
+.date-label i {
+    color: #667eea;
+    font-size: 1.2rem;
+}
+
+.date-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2d3748;
+    background: white;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+}
+
+.date-input:hover {
+    border-color: rgba(102, 126, 234, 0.5);
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.selected-date-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.date-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.clear-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    color: #718096;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.clear-button:hover {
+    background: #f7fafc;
+    border-color: #cbd5e0;
+    color: #4a5568;
+    transform: translateY(-1px);
+}
+
+.clear-button i {
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .date-filter-container {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .date-picker-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .date-input {
+        width: 100%;
+    }
+
+    .selected-date-display {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .date-badge {
+        text-align: center;
+    }
+
+    .clear-button {
+        justify-content: center;
     }
 }
 </style>
