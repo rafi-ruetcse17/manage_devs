@@ -58,8 +58,7 @@ const closeModal = () => {
                         Blocker Status
                     </h3>
                     <div class="blocker-badge" :class="note.hasBlocker ? 'has-blocker' : 'no-blocker'">
-                        <span class="blocker-icon">{{ note.hasBlocker ? '🔥' : '✅' }}</span>
-                        <span class="blocker-text">{{ note.hasBlocker ? 'Has Blocker' : 'No Blockers' }}</span>
+                        <span class="blocker-text">{{ note.hasBlocker ? 'YES' : 'NO' }}</span>
                     </div>
                 </div>
 

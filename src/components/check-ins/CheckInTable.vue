@@ -6,6 +6,10 @@ import UserCell from './UserCell.vue';
 defineProps<{
     notes: DailyNote[];
 }>();
+
+const emit = defineEmits<{
+    (e: 'rowClick', note: DailyNote): void;
+}>();
 </script>
 
 <template>
@@ -20,7 +24,7 @@ defineProps<{
                 </tr>
             </thead>
             <tbody>
-                <CheckInTableRow v-for="note in notes" :key="note._id" :note="note">
+                <CheckInTableRow v-for="note in notes" :key="note._id" :note="note" @click="emit('rowClick', note)">
                     <UserCell :note="note" />
                     <td class="cell">
                         <div class="content">{{ note.dayStartPlan }}</div>

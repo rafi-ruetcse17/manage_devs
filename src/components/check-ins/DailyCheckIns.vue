@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import CheckInTable from "./CheckInTable.vue";
+import CheckinModal from "../modals/CheckinModal.vue";
 import AddCheckinModal from "../modals/AddCheckinModal.vue";
 import { useAuthStore } from "../../stores/authStore";
 
@@ -11,6 +12,8 @@ const dailyNotes = ref<DailyNote[]>([]);
 const loading = ref(true);
 const error = ref("");
 const showAddModal = ref(false);
+const showDetailModal = ref(false);
+const selectedNote = ref<DailyNote | null>(null);
 const today = new Date().toLocaleDateString("en-CA");
 const selectedDate = ref<string>(today);
 const { user, logout } = useAuthStore();
@@ -94,6 +97,16 @@ onMounted(() => {
     fetchDailyNotes(selectedDate.value);
 });
 
+const handleRowClick = (note: DailyNote) => {
+    selectedNote.value = note;
+    showDetailModal.value = true;
+};
+
+const closeDetailModal = () => {
+    showDetailModal.value = false;
+    selectedNote.value = null;
+};
+
 </script>
 
 <template>
@@ -101,7 +114,6 @@ onMounted(() => {
         <!-- Auth Header -->
         <div class="auth-header">
             <div class="user-profile">
-                <!-- Fill/Update Report Button -->
                 <button @click="showAddModal = true" class="button is-primary is-rounded mr-4 fill-report-btn">
                     <span class="icon"><i :class="hasSubmittedToday ? 'fas fa-edit' : 'fas fa-plus-circle'"></i></span>
                     <span>{{ hasSubmittedToday ? 'Update Report' : 'Fill out Report' }}</span>
@@ -163,7 +175,8 @@ onMounted(() => {
             </div>
 
             <!-- Daily Notes Table -->
-            <CheckInTable v-if="!loading && !error && dailyNotes.length > 0" :notes="formattedDailyNotes" />
+            <CheckInTable v-if="!loading && !error && dailyNotes.length > 0" :notes="formattedDailyNotes"
+                @rowClick="handleRowClick" />
 
             <div class="has-text-centered mt-5" v-if="!loading && !error">
                 <button class="button is-primary is-outlined" @click="() => fetchDailyNotes()">
@@ -175,7 +188,8 @@ onMounted(() => {
             </div>
         </div>
 
-        <!-- Modal -->
+        <!-- Modals -->
+        <CheckinModal :show="showDetailModal" :note="selectedNote" @close="closeDetailModal" />
         <AddCheckinModal :show="showAddModal" :existingCheckIn="todayCheckIn" @close="showAddModal = false"
             @success="fetchDailyNotes" />
     </section>
