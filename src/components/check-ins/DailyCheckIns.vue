@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
+import { API_ENDPOINTS } from "../../config/api";
 import CheckInTable from "./CheckInTable.vue";
 import CheckinModal from "../modals/CheckinModal.vue";
 import AddCheckinModal from "../modals/AddCheckinModal.vue";
@@ -21,7 +22,7 @@ const { user, logout } = useAuthStore();
 const fetchDailyNotes = async (date?: string) => {
     try {
         loading.value = true;
-        let url = "http://localhost:4000/api/daily-notes";
+        let url = API_ENDPOINTS.DAILY_NOTES;
 
         if (date) {
             url += `?date=${date}`;

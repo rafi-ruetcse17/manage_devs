@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../../config/api';
 import { type DailyNote } from '../../types/note';
 
 const props = defineProps<{
@@ -43,7 +44,7 @@ const handleSubmit = async () => {
     error.value = '';
 
     try {
-        const response = await axios.post('http://localhost:4000/api/daily-notes', {
+        const response = await axios.post(API_ENDPOINTS.DAILY_NOTES, {
             dayStartPlan: dayStartPlan.value,
             dayEndWorkUpdate: dayEndWorkUpdate.value,
             hasBlocker: hasBlocker.value,

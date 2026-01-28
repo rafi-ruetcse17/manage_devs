@@ -1,5 +1,6 @@
 import { ref, computed } from "vue";
 import axios from "axios";
+import { API_ENDPOINTS } from "@/config/api";
 
 // Set global axios defaults for cookie-based auth
 axios.defaults.withCredentials = true;
@@ -30,7 +31,7 @@ export const useAuthStore = () => {
 
   const logout = async () => {
     try {
-      await axios.post("http://localhost:4000/api/auth/logout");
+      await axios.post(API_ENDPOINTS.AUTH.LOGOUT);
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {

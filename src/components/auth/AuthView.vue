@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../../config/api';
 import { useAuthStore } from '../../stores/authStore';
 
 const { login } = useAuthStore();
@@ -17,8 +18,8 @@ const handleSubmit = async () => {
     error.value = '';
     try {
         const url = isRegister.value
-            ? 'http://localhost:4000/api/auth/register'
-            : 'http://localhost:4000/api/auth/login';
+            ? API_ENDPOINTS.AUTH.REGISTER
+            :  API_ENDPOINTS.AUTH.LOGIN;
 
         const payload = isRegister.value
             ? { name: name.value, username: username.value, password: password.value }
