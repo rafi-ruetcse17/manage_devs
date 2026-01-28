@@ -137,6 +137,7 @@ const closeDetailModal = () => {
 
         <div class="container">
             <h1 class="main-title">Team Standups</h1>
+            <p class="team-name">TEAM : Front-End</p>
             <p class="subtitle-text">Stay connected with daily check-ins from your team</p>
 
             <!-- Date Filter Section -->
@@ -330,9 +331,19 @@ const closeDetailModal = () => {
     font-weight: 800;
     text-align: center;
     color: #ffffff;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     letter-spacing: -0.02em;
+}
+
+.team-name {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
 }
 
 .subtitle-text {

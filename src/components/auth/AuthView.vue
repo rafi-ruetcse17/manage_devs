@@ -89,7 +89,7 @@ const toggleMode = () => {
                     </div>
 
                     <div v-if="error" class="notification is-danger is-light py-2 px-4 mb-4">
-                        {{ error }}f
+                        {{ error }}
                     </div>
 
                     <div class="field mt-5">
