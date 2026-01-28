@@ -114,18 +114,23 @@ const closeDetailModal = () => {
         <!-- Auth Header -->
         <div class="auth-header">
             <div class="user-profile">
-                <button @click="showAddModal = true" class="button is-primary is-rounded mr-4 fill-report-btn">
-                    <span class="icon"><i :class="hasSubmittedToday ? 'fas fa-edit' : 'fas fa-plus-circle'"></i></span>
-                    <span>{{ hasSubmittedToday ? 'Update Report' : 'Fill out Report' }}</span>
+                <button @click="showAddModal = true" class="report-btn" :class="{ 'update-mode': hasSubmittedToday }">
+                    <i :class="hasSubmittedToday ? 'fas fa-edit' : 'fas fa-plus-circle'"></i>
+                    <span>{{ hasSubmittedToday ? 'Update Report' : 'Fill Report' }}</span>
                 </button>
+                <div class="user-info-section">
+                    <div class="user-avatar-small">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-details-section">
+                        <p class="user-name-text">{{ user?.name }}</p>
+                        <button @click="logout" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </button>
+                    </div>
+                </div>
 
-                <div class="user-avatar-small">
-                    <i class="fas fa-user-circle"></i>
-                </div>
-                <div class="user-info-text">
-                    <p class="user-name-text">{{ user?.name }}</p>
-                    <button @click="logout" class="logout-link">Logout</button>
-                </div>
             </div>
         </div>
 
@@ -221,60 +226,102 @@ const closeDetailModal = () => {
 .user-profile {
     display: flex;
     align-items: center;
-    gap: 12px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 8px 20px;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0.75rem 1.25rem;
     border-radius: 50px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(10px);
 }
 
-.fill-report-btn {
-    font-weight: 700;
-    transition: all 0.3s ease;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-}
-
-.fill-report-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+.user-info-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .user-avatar-small {
-    font-size: 24px;
-    color: #667eea;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 22px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
-.user-info-text {
+.user-details-section {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    gap: 0.25rem;
 }
 
 .user-name-text {
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: #2d3748;
     line-height: 1;
-    margin-bottom: 2px;
+    margin: 0;
 }
 
-.logout-link {
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
     background: none;
     border: none;
     padding: 0;
     color: #718096;
-    font-size: 0.75rem;
-    text-decoration: underline;
+    font-size: 0.8rem;
     cursor: pointer;
-    text-align: left;
-    transition: color 0.3s ease;
+    transition: all 0.2s ease;
+    font-weight: 500;
 }
 
-.logout-link:hover {
+.logout-btn:hover {
     color: #e53e3e;
+}
+
+.logout-btn i {
+    font-size: 0.75rem;
+}
+
+.report-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 25px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.report-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.report-btn.update-mode {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.report-btn.update-mode:hover {
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+.report-btn i {
+    font-size: 1rem;
 }
 
 .main-title {
