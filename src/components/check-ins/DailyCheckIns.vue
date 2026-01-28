@@ -487,6 +487,68 @@ const closeDetailModal = () => {
 }
 
 @media (max-width: 768px) {
+    .section {
+        padding: 2rem 1rem;
+    }
+
+    .auth-header {
+        position: static;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: center;
+    }
+
+    .user-profile {
+        padding: 0.5rem 0.75rem;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 100%;
+    }
+
+    .report-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+        gap: 0.4rem;
+    }
+
+    .report-btn i {
+        font-size: 0.85rem;
+    }
+
+    .user-avatar-small {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+    }
+
+    .user-name-text {
+        font-size: 0.85rem;
+    }
+
+    .logout-btn {
+        font-size: 0.7rem;
+        gap: 0.25rem;
+    }
+
+    .logout-btn i {
+        font-size: 0.7rem;
+    }
+
+    .main-title {
+        font-size: 2rem;
+        margin-top: 0;
+    }
+
+    .team-name {
+        font-size: 1.1rem;
+    }
+
+    .subtitle-text {
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+    }
+
     .date-filter-container {
         flex-direction: column;
         align-items: stretch;
@@ -513,6 +575,57 @@ const closeDetailModal = () => {
 
     .clear-button {
         justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .section {
+        padding: 1.5rem 0.75rem;
+    }
+
+    .user-profile {
+        padding: 0.4rem 0.6rem;
+        gap: 0.4rem;
+    }
+
+    .report-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    .report-btn span {
+        display: none;
+    }
+
+    .report-btn i {
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .user-avatar-small {
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
+    }
+
+    .user-name-text {
+        font-size: 0.8rem;
+    }
+
+    .logout-btn {
+        font-size: 0.65rem;
+    }
+
+    .main-title {
+        font-size: 1.75rem;
+    }
+
+    .team-name {
+        font-size: 1rem;
+    }
+
+    .subtitle-text {
+        font-size: 0.85rem;
     }
 }
 </style>
