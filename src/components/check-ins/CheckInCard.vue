@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { type DailyNote } from "../../types/note";
 
-defineProps<{ note: DailyNote; type: "previous" | "today" | "blocker"; }>();
+defineProps<{ note: DailyNote; type: "start" | "end" | "blocker"; }>();
 
 const emit = defineEmits<{ (e: 'click', note: DailyNote): void }>();
 
@@ -24,8 +24,8 @@ const handleClick = (note: DailyNote) => {
             </div>
         </div>
         <div class="card-body">
-            <p v-if="type === 'previous'" class="content-text">{{ note.previousDayWork }}</p>
-            <p v-else-if="type === 'today'" class="content-text">{{ note.todayPlan }}</p>
+            <p v-if="type === 'start'" class="content-text">{{ note.dayStartPlan }}</p>
+            <p v-else-if="type === 'end'" class="content-text">{{ note.dayEndWorkUpdate }}</p>
             <div v-else-if="type === 'blocker'" class="blocker-status">
                 <span v-if="note.hasBlocker" class="blocker-icon">🔥</span>
                 <span v-else class="no-blocker-icon">✅</span>

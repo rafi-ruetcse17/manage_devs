@@ -38,18 +38,18 @@ const closeModal = () => {
             <section class="modal-card-body">
                 <div class="modal-section">
                     <h3 class="modal-section-title">
-                        <i class="fas fa-check-circle"></i>
-                        Previous Day Work
+                        <i class="fas fa-sun"></i>
+                        Day Start Plan (Morning)
                     </h3>
-                    <p class="modal-section-content">{{ note.previousDayWork }}</p>
+                    <p class="modal-section-content">{{ note.dayStartPlan }}</p>
                 </div>
 
                 <div class="modal-section">
                     <h3 class="modal-section-title">
-                        <i class="fas fa-calendar-day"></i>
-                        Plan for Today
+                        <i class="fas fa-moon"></i>
+                        Day End Work Update (Evening)
                     </h3>
-                    <p class="modal-section-content">{{ note.todayPlan }}</p>
+                    <p class="modal-section-content">{{ note.dayEndWorkUpdate }}</p>
                 </div>
 
                 <div class="modal-section">

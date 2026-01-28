@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
-import CheckInCard from "./CheckInCard.vue";
-import CheckinModal from "../modals/CheckinModal.vue";
+import CheckInTable from "./CheckInTable.vue";
 import AddCheckinModal from "../modals/AddCheckinModal.vue";
 import { useAuthStore } from "../../stores/authStore";
 
@@ -11,9 +10,7 @@ import { type DailyNote } from "../../types/note";
 const dailyNotes = ref<DailyNote[]>([]);
 const loading = ref(true);
 const error = ref("");
-const showModal = ref(false);
 const showAddModal = ref(false);
-const selectedNote = ref<DailyNote | null>(null);
 const today = new Date().toLocaleDateString("en-CA");
 const selectedDate = ref<string>(today);
 const { user, logout } = useAuthStore();
@@ -31,7 +28,6 @@ const fetchDailyNotes = async (date?: string) => {
 
         if (response.data.success) {
             dailyNotes.value = response.data.data;
-
         } else {
             error.value = "Failed to fetch daily notes";
         }
@@ -58,22 +54,21 @@ const formattedDailyNotes = computed(() => {
 
 const hasSubmittedToday = computed(() => {
     if (!user.value) return false;
-    const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+    const today = new Date().toLocaleDateString("en-CA");
     return dailyNotes.value.some(note => {
         const noteDate = new Date(note.createdAt).toLocaleDateString("en-CA");
         return noteDate === today && note.username === user.value?.username;
     });
 });
 
-const handleCardClick = (note: DailyNote) => {
-    selectedNote.value = note;
-    showModal.value = true;
-};
-
-const closeModal = () => {
-    showModal.value = false;
-    selectedNote.value = null;
-};
+const todayCheckIn = computed(() => {
+    if (!user.value) return null;
+    const today = new Date().toLocaleDateString("en-CA");
+    return dailyNotes.value.find(note => {
+        const noteDate = new Date(note.createdAt).toLocaleDateString("en-CA");
+        return noteDate === today && note.username === user.value?.username;
+    }) || null;
+});
 
 const handleDateSelect = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -106,16 +101,11 @@ onMounted(() => {
         <!-- Auth Header -->
         <div class="auth-header">
             <div class="user-profile">
-                <!-- Fill Report Button -->
-                <button v-if="!hasSubmittedToday" @click="showAddModal = true"
-                    class="button is-primary is-rounded mr-4 fill-report-btn">
-                    <span class="icon"><i class="fas fa-plus-circle"></i></span>
-                    <span>Fill out Report</span>
+                <!-- Fill/Update Report Button -->
+                <button @click="showAddModal = true" class="button is-primary is-rounded mr-4 fill-report-btn">
+                    <span class="icon"><i :class="hasSubmittedToday ? 'fas fa-edit' : 'fas fa-plus-circle'"></i></span>
+                    <span>{{ hasSubmittedToday ? 'Update Report' : 'Fill out Report' }}</span>
                 </button>
-                <div v-else class="has-text-success is-size-7 mr-4 has-text-weight-bold">
-                    <span class="icon"><i class="fas fa-check-circle"></i></span>
-                    Report Submitted
-                </div>
 
                 <div class="user-avatar-small">
                     <i class="fas fa-user-circle"></i>
@@ -172,41 +162,8 @@ onMounted(() => {
                 </p>
             </div>
 
-            <!-- Daily Notes 3-Column Layout -->
-            <div v-if="!loading && !error && dailyNotes.length > 0" class="three-column-layout">
-                <!-- Column 1: Previous Work Day Progress -->
-                <div class="column-wrapper">
-                    <div class="column-header">
-                        <h3 class="column-title">Previous work day progress</h3>
-                    </div>
-                    <div class="column-content">
-                        <CheckInCard v-for="note in formattedDailyNotes" :key="`prev-${note._id}`" :note="note"
-                            type="previous" @click="handleCardClick" />
-                    </div>
-                </div>
-
-                <!-- Column 2: Plans for Today -->
-                <div class="column-wrapper">
-                    <div class="column-header">
-                        <h3 class="column-title">Plans for today</h3>
-                    </div>
-                    <div class="column-content">
-                        <CheckInCard v-for="note in formattedDailyNotes" :key="`today-${note._id}`" :note="note"
-                            type="today" @click="handleCardClick" />
-                    </div>
-                </div>
-
-                <!-- Column 3: Any Blockers -->
-                <div class="column-wrapper">
-                    <div class="column-header">
-                        <h3 class="column-title">Any blockers?</h3>
-                    </div>
-                    <div class="column-content">
-                        <CheckInCard v-for="note in formattedDailyNotes" :key="`blocker-${note._id}`" :note="note"
-                            type="blocker" @click="handleCardClick" />
-                    </div>
-                </div>
-            </div>
+            <!-- Daily Notes Table -->
+            <CheckInTable v-if="!loading && !error && dailyNotes.length > 0" :notes="formattedDailyNotes" />
 
             <div class="has-text-centered mt-5" v-if="!loading && !error">
                 <button class="button is-primary is-outlined" @click="() => fetchDailyNotes()">
@@ -218,9 +175,9 @@ onMounted(() => {
             </div>
         </div>
 
-        <!-- Modals -->
-        <CheckinModal :show="showModal" :note="selectedNote" @close="closeModal" />
-        <AddCheckinModal :show="showAddModal" @close="showAddModal = false" @success="fetchDailyNotes" />
+        <!-- Modal -->
+        <AddCheckinModal :show="showAddModal" :existingCheckIn="todayCheckIn" @close="showAddModal = false"
+            @success="fetchDailyNotes" />
     </section>
 </template>
 
@@ -324,55 +281,6 @@ onMounted(() => {
     font-weight: 400;
 }
 
-.content p {
-    line-height: 1.6;
-}
-
-.three-column-layout {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
-    margin-top: 2rem;
-
-}
-
-.column-wrapper {
-    display: flex;
-    flex-direction: column;
-    min-height: 400px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
-}
-
-.column-wrapper:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-}
-
-.column-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 20px;
-    border-bottom: none;
-}
-
-.column-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    text-align: center;
-    color: #ffffff;
-    margin: 0;
-    letter-spacing: -0.01em;
-}
-
-.column-content {
-    flex: 1;
-    padding: 20px;
-    background: #ffffff;
-}
-
 .notification {
     font-size: 1.1rem;
     padding: 1.5rem;
@@ -390,25 +298,6 @@ onMounted(() => {
 .button.is-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-}
-
-@media (max-width: 1024px) {
-    .main-title {
-        font-size: 2.5rem;
-    }
-
-    .subtitle-text {
-        font-size: 1.1rem;
-    }
-
-    .three-column-layout {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .column-title {
-        font-size: 1.3rem;
-    }
 }
 
 /* Date Filter Styles */
@@ -512,6 +401,16 @@ onMounted(() => {
 
 .clear-button i {
     font-size: 0.9rem;
+}
+
+@media (max-width: 1024px) {
+    .main-title {
+        font-size: 2.5rem;
+    }
+
+    .subtitle-text {
+        font-size: 1.1rem;
+    }
 }
 
 @media (max-width: 768px) {

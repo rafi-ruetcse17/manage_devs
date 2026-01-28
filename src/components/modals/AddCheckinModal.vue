@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import axios from 'axios';
+import { type DailyNote } from '../../types/note';
 
 const props = defineProps<{
     show: boolean;
+    existingCheckIn?: DailyNote | null;
 }>();
 
 const emit = defineEmits<{
@@ -11,15 +13,29 @@ const emit = defineEmits<{
     (e: 'success'): void;
 }>();
 
-const previousDayWork = ref('');
-const todayPlan = ref('');
+const dayStartPlan = ref('');
+const dayEndWorkUpdate = ref('');
 const hasBlocker = ref(false);
 const loading = ref(false);
 const error = ref('');
 
+// Watch for existingCheckIn changes to pre-fill form
+watch(() => props.existingCheckIn, (checkIn) => {
+    if (checkIn) {
+        dayStartPlan.value = checkIn.dayStartPlan || '';
+        dayEndWorkUpdate.value = checkIn.dayEndWorkUpdate || '';
+        hasBlocker.value = checkIn.hasBlocker || false;
+    } else {
+        // Reset when creating new
+        dayStartPlan.value = '';
+        dayEndWorkUpdate.value = '';
+        hasBlocker.value = false;
+    }
+}, { immediate: true });
+
 const handleSubmit = async () => {
-    if (!previousDayWork.value || !todayPlan.value) {
-        error.value = 'Please fill out all fields';
+    if (!dayStartPlan.value) {
+        error.value = 'Please fill out the day start plan';
         return;
     }
 
@@ -28,17 +44,16 @@ const handleSubmit = async () => {
 
     try {
         const response = await axios.post('http://localhost:4000/api/daily-notes', {
-            previousDayWork: previousDayWork.value,
-            todayPlan: todayPlan.value,
+            dayStartPlan: dayStartPlan.value,
+            dayEndWorkUpdate: dayEndWorkUpdate.value,
             hasBlocker: hasBlocker.value,
         });
 
         if (response.data.success) {
             emit('success');
             emit('close');
-            // Reset fields
-            previousDayWork.value = '';
-            todayPlan.value = '';
+            dayStartPlan.value = '';
+            dayEndWorkUpdate.value = '';
             hasBlocker.value = false;
         }
     } catch (err: any) {
@@ -54,23 +69,25 @@ const handleSubmit = async () => {
         <div class="modal-background" @click="$emit('close')"></div>
         <div class="modal-content">
             <div class="box report-box">
-                <h3 class="title is-4 has-text-centered">Daily Check-in</h3>
-                <p class="subtitle is-6 has-text-centered mb-5">Share your progress with the team</p>
+                <h3 class="title is-4 has-text-centered">{{ existingCheckIn ? 'Update' : 'Create' }} Daily Check-in</h3>
+                <p class="subtitle is-6 has-text-centered mb-5">{{ existingCheckIn ? 'Update your progress' : 'Share your progress with the team' }}</p>
 
                 <form @submit.prevent="handleSubmit">
                     <div class="field">
-                        <label class="label">What did you do on the previous work day?</label>
+                        <label class="label">What is your plan for today? (Morning) <span
+                                class="required">*</span></label>
                         <div class="control">
-                            <textarea v-model="previousDayWork" class="textarea" placeholder="Describe your progress..."
-                                required></textarea>
+                            <textarea v-model="dayStartPlan" class="textarea"
+                                placeholder="What do you plan to accomplish today?" required></textarea>
                         </div>
                     </div>
 
                     <div class="field">
-                        <label class="label">What are your plans for today?</label>
+                        <label class="label">What did you accomplish today? (Evening) <span class="optional">-
+                                Optional</span></label>
                         <div class="control">
-                            <textarea v-model="todayPlan" class="textarea" placeholder="What's on your list?"
-                                required></textarea>
+                            <textarea v-model="dayEndWorkUpdate" class="textarea"
+                                placeholder="Fill this out at the end of the day..."></textarea>
                         </div>
                     </div>
 
@@ -149,5 +166,16 @@ const handleSubmit = async () => {
 .button.is-primary:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.required {
+    color: #e53e3e;
+    font-weight: 700;
+}
+
+.optional {
+    color: #718096;
+    font-weight: 500;
+    font-size: 0.9em;
 }
 </style>
