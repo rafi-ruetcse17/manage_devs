@@ -24,8 +24,10 @@ const fetchDailyNotes = async (date?: string) => {
         loading.value = true;
         let url = API_ENDPOINTS.DAILY_NOTES;
 
-        if (date) {
-            url += `?date=${date}`;
+        const queryDate = date !== undefined ? date : selectedDate.value;
+
+        if (queryDate) {
+            url += `?date=${queryDate}`;
         }
 
         const response = await axios.get(url);
