@@ -7,6 +7,7 @@ import { type DailyNote } from '../../types/note';
 const props = defineProps<{
     show: boolean;
     existingCheckIn?: DailyNote | null;
+    selectedDate?: string;
 }>();
 
 const emit = defineEmits<{
@@ -48,6 +49,7 @@ const handleSubmit = async () => {
             dayStartPlan: dayStartPlan.value,
             dayEndWorkUpdate: dayEndWorkUpdate.value,
             hasBlocker: hasBlocker.value,
+            date: props.selectedDate,
         });
 
         if (response.data.success) {

@@ -52,27 +52,26 @@ const formattedDailyNotes = computed(() => {
             year: "numeric",
             month: "short",
             day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
+
         }),
     }));
 });
 
-const hasSubmittedToday = computed(() => {
+const hasSubmittedSelectedDate = computed(() => {
     if (!user.value) return false;
-    const today = new Date().toLocaleDateString("en-CA");
+    const dateToQuery = selectedDate.value || new Date().toLocaleDateString("en-CA");
     return dailyNotes.value.some(note => {
         const noteDate = new Date(note.createdAt).toLocaleDateString("en-CA");
-        return noteDate === today && note.username === user.value?.username;
+        return noteDate === dateToQuery && note.username === user.value?.username;
     });
 });
 
-const todayCheckIn = computed(() => {
+const selectedDateCheckIn = computed(() => {
     if (!user.value) return null;
-    const today = new Date().toLocaleDateString("en-CA");
+    const dateToQuery = selectedDate.value || new Date().toLocaleDateString("en-CA");
     return dailyNotes.value.find(note => {
         const noteDate = new Date(note.createdAt).toLocaleDateString("en-CA");
-        return noteDate === today && note.username === user.value?.username;
+        return noteDate === dateToQuery && note.username === user.value?.username;
     }) || null;
 });
 
@@ -110,6 +109,16 @@ const closeDetailModal = () => {
     selectedNote.value = null;
 };
 
+const handleEditClick = (note: DailyNote) => {
+    selectedNote.value = note;
+    showAddModal.value = true;
+};
+
+const handleCloseAddModal = () => {
+    showAddModal.value = false;
+    selectedNote.value = null;
+};
+
 </script>
 
 <template>
@@ -117,9 +126,10 @@ const closeDetailModal = () => {
         <!-- Auth Header -->
         <div class="auth-header">
             <div class="user-profile">
-                <button @click="showAddModal = true" class="report-btn" :class="{ 'update-mode': hasSubmittedToday }">
-                    <i :class="hasSubmittedToday ? 'fas fa-edit' : 'fas fa-plus-circle'"></i>
-                    <span>{{ hasSubmittedToday ? 'Update Report' : 'Fill Report' }}</span>
+                <button @click="showAddModal = true" class="report-btn"
+                    :class="{ 'update-mode': hasSubmittedSelectedDate }">
+                    <i :class="hasSubmittedSelectedDate ? 'fas fa-edit' : 'fas fa-plus-circle'"></i>
+                    <span>{{ hasSubmittedSelectedDate ? 'Update Report' : 'Fill Report' }}</span>
                 </button>
                 <div class="user-info-section">
                     <div class="user-avatar-small">
@@ -185,7 +195,7 @@ const closeDetailModal = () => {
 
             <!-- Daily Notes Table -->
             <CheckInTable v-if="!loading && !error && dailyNotes.length > 0" :notes="formattedDailyNotes"
-                @rowClick="handleRowClick" />
+                :currentUsername="user?.username" @rowClick="handleRowClick" @editClick="handleEditClick" />
 
             <div class="has-text-centered mt-5" v-if="!loading && !error">
                 <button class="button is-primary is-outlined" @click="() => fetchDailyNotes()">
@@ -197,10 +207,9 @@ const closeDetailModal = () => {
             </div>
         </div>
 
-        <!-- Modals -->
         <CheckinModal :show="showDetailModal" :note="selectedNote" @close="closeDetailModal" />
-        <AddCheckinModal :show="showAddModal" :existingCheckIn="todayCheckIn" @close="showAddModal = false"
-            @success="fetchDailyNotes" />
+        <AddCheckinModal :show="showAddModal" :existingCheckIn="selectedNote || selectedDateCheckIn"
+            :selectedDate="selectedDate || today" @close="handleCloseAddModal" @success="fetchDailyNotes" />
     </section>
 </template>
 

@@ -5,10 +5,12 @@ import UserCell from './UserCell.vue';
 
 defineProps<{
     notes: DailyNote[];
+    currentUsername?: string;
 }>();
 
 const emit = defineEmits<{
     (e: 'rowClick', note: DailyNote): void;
+    (e: 'editClick', note: DailyNote): void;
 }>();
 </script>
 
@@ -21,6 +23,7 @@ const emit = defineEmits<{
                     <th class="col-plan">Day Start Plan (Morning)</th>
                     <th class="col-update">Day End Work Update (Evening)</th>
                     <th class="col-blocker">Any blockers?</th>
+                    <th class="col-actions">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,6 +41,13 @@ const emit = defineEmits<{
                         <div class="badge" :class="note.hasBlocker ? 'blocked' : 'clear'">
                             {{ note.hasBlocker ? 'YES' : 'NO' }}
                         </div>
+                    </td>
+                    <td class="cell">
+                        <button v-if="note.username === currentUsername" class="edit-icon-btn"
+                            @click.stop="emit('editClick', note)" title="Edit check-in">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <span v-else class="no-actions">—</span>
                     </td>
                 </CheckInTableRow>
             </tbody>
@@ -85,7 +95,12 @@ const emit = defineEmits<{
 }
 
 .col-blocker {
-    width: 20%;
+    width: 15%;
+}
+
+.col-actions {
+    width: 5%;
+    text-align: center !important;
 }
 
 .cell {
@@ -129,6 +144,37 @@ const emit = defineEmits<{
 .badge.clear {
     background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
     color: white;
+}
+
+.actions-cell {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.edit-icon-btn {
+    background: #edf2f7;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a5568;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.edit-icon-btn:hover {
+    background: #667eea;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.no-actions {
+    color: #cbd5e0;
+    font-size: 0.9rem;
 }
 
 @media (max-width: 1024px) {
