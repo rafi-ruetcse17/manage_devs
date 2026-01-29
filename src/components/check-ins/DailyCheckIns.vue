@@ -165,11 +165,6 @@ const handleCloseAddModal = () => {
                     </div>
                     <div class="selected-date-display">
                         <span class="date-badge">{{ formattedSelectedDate }}</span>
-                        <button v-if="selectedDate" @click="clearDateFilter" class="clear-button"
-                            title="Clear date filter">
-                            <i class="fas fa-times"></i>
-                            Clear
-                        </button>
                     </div>
                 </div>
             </div>
