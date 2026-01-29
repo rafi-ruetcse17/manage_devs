@@ -72,8 +72,12 @@ const handleSubmit = async () => {
         <div class="modal-background" @click="$emit('close')"></div>
         <div class="modal-content">
             <div class="box report-box">
-                <h3 class="title is-4 has-text-centered">{{ existingCheckIn ? 'Update' : 'Create' }} Daily Check-in</h3>
-                <p class="subtitle is-6 has-text-centered mb-5">{{ existingCheckIn ? 'Update your progress' : 'Share your progress with the team' }}</p>
+                <h3 class="title is-4 has-text-centered modal-title">
+                    {{ existingCheckIn ? 'Update' : 'Create' }} Daily Check-in
+                </h3>
+                <p class="subtitle is-6 has-text-centered mb-5 modal-subtitle">
+                    {{ existingCheckIn ? 'Update your progress' : 'Share your progress with the team' }}
+                </p>
 
                 <form @submit.prevent="handleSubmit">
                     <div class="field">
@@ -127,9 +131,19 @@ const handleSubmit = async () => {
 </template>
 
 <style scoped>
+.modal-title {
+    color: #2d3748;
+    font-weight: 800;
+}
+
+.modal-subtitle {
+    color: #718096;
+}
+
 .report-box {
     border-radius: 16px;
     padding: 2.5rem;
+    background: #fff;
 }
 
 .label {
@@ -144,6 +158,8 @@ const handleSubmit = async () => {
     transition: all 0.3s ease;
     resize: vertical;
     min-height: 100px;
+    background: #fff;
+    color: #000;
 }
 
 .textarea:focus {

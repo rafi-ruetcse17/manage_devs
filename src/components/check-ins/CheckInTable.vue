@@ -58,7 +58,7 @@ const emit = defineEmits<{
 <style scoped>
 .table-container {
     margin-top: 2rem;
-    background: rgba(255, 255, 255, 0.98);
+    background: #fff;
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     overflow: hidden;
@@ -106,6 +106,7 @@ const emit = defineEmits<{
 .cell {
     padding: 1.5rem;
     vertical-align: top;
+    background: #fff;
 }
 
 .content {
